@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 --[[
-Tincan v0.1 - dead simple persistent key value store library
+Tincan v0.2 - dead simple persistent key value store library
 
 Usage:
     local tincan = require("tincan")
@@ -89,16 +89,10 @@ end
 
 function M.load(file)
     file = file or "tincan.db"
-    file = io.open(file, "r")
+    local func = loadfile(file)
 
-    if file then
-        local body = file:read("*a")
-
-        if body then
-            M.store = loadstring(body)()
-        end
-
-        file:close()
+    if func then
+        M.store = func()
     end
 end
 

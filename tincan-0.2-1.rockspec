@@ -1,16 +1,16 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = "tincan"
-version = "0.1-1"
+version = "0.2-1"
 
 -- LuaDist source
 source = {
-  tag = "0.1-1",
+  tag = "0.2-1",
   url = "git://github.com/LuaDist-testing/tincan.git"
 }
 -- Original source
 -- source = {
---     url = "http://calminferno.net/lua/tincan-0.1.tar.gz"
+--     url = "http://calminferno.net/lua/tincan-0.2.tar.gz"
 -- }
 
 description = {
