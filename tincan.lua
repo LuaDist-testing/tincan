@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 --[[
-Tincan v0.2 - dead simple persistent key value store library
+Tincan v0.3 - dead simple persistent key value store library
 
 Usage:
     local tincan = require("tincan")
@@ -24,10 +24,12 @@ Usage:
 
     local uid = tincan.put("uid", 1)
 
-    tincan.put("uid:" .. uid, {name = "Jane Doe", email = "jane.doe@example.com"})
+    tincan.put("uid:" .. uid, {name = "Jane Doe",
+                               email = "jane.doe@example.com"})
     uid = tincan.put("uid", uid + 1)
 
-    tincan.put("uid:" .. uid, {name = "John Doe", email = "john.doe@example.com"})
+    tincan.put("uid:" .. uid, {name = "John Doe",
+                               email = "john.doe@example.com"})
     uid = tincan.put("uid", uid + 1)
 
     tincan.save()
@@ -44,16 +46,10 @@ M.store = {}
 local function serialize(o)
     local t = {}
 
-    if type(o) == "number" then
-        table.insert(t, o)
+    if type(o) == "boolean" or type(o) == "number" then
+        table.insert(t, tostring(o))
     elseif type(o) == "string" then
         table.insert(t, string.format("%q", o))
-    elseif type(o) == "boolean" then
-        if o then
-            table.insert(t, "true")
-        else
-            table.insert(t, "false")
-        end
     elseif type(o) == "table" then
         table.insert(t, "{")
 
@@ -89,10 +85,12 @@ end
 
 function M.load(file)
     file = file or "tincan.db"
-    local func = loadfile(file)
+    local func, err = loadfile(file)
 
     if func then
         M.store = func()
+    elseif not string.find(err, "No such file", 1, true) then
+        error("cannot parse file")
     end
 end
 
