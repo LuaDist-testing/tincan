@@ -1,3 +1,4 @@
+v0.4 - Rename put to set but keep put alias for this release. Add new exists, incr and decr methods.
 v0.3 - Use tostring on boolean and number types. Error if loadfile cannot parse file.
 v0.2 - Use loadfile in place of io.open + file:read + loadstring.
 v0.1 - Initial release.

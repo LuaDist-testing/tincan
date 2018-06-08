@@ -16,21 +16,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 --[[
-Tincan v0.3 - dead simple persistent key value store library
+Tincan v0.4 - dead simple persistent key value store library
 
 Usage:
     local tincan = require("tincan")
     tincan.load()
 
-    local uid = tincan.put("uid", 1)
+    local uid = tincan.set("uid", 1)
 
-    tincan.put("uid:" .. uid, {name = "Jane Doe",
+    tincan.set("uid:" .. uid, {name = "Jane Doe",
                                email = "jane.doe@example.com"})
-    uid = tincan.put("uid", uid + 1)
+    uid = tincan.incr("uid")
 
-    tincan.put("uid:" .. uid, {name = "John Doe",
+    tincan.set("uid:" .. uid, {name = "John Doe",
                                email = "john.doe@example.com"})
-    uid = tincan.put("uid", uid + 1)
+    uid = tincan.incr("uid")
 
     tincan.save()
 
@@ -69,10 +69,12 @@ local function serialize(o)
     return table.concat(t)
 end
 
-function M.put(key, value)
+function M.set(key, value)
     M.store[key] = value
     return value
 end
+
+M.put = M.set -- will be removed in next version
 
 function M.get(key)
     return M.store[key]
@@ -83,6 +85,36 @@ function M.delete(key)
     return nil
 end
 
+function M.exists(key)
+    if M.store[key] ~= nil then
+        return true
+    else
+        return false
+    end
+end
+
+function M.incr(key)
+    local value = M.store[key]
+
+    if type(value) == "number" then
+        M.store[key] = value + 1
+        return value + 1
+    else
+        error("cannot increment a non-number")
+    end
+end
+
+function M.decr(key)
+    local value = M.store[key]
+
+    if type(value) == "number" then
+        M.store[key] = value - 1
+        return value - 1
+    else
+        error("cannot decrement a non-number")
+    end
+end
+
 function M.load(file)
     file = file or "tincan.db"
     local func, err = loadfile(file)
@@ -90,7 +122,7 @@ function M.load(file)
     if func then
         M.store = func()
     elseif not string.find(err, "No such file", 1, true) then
-        error("cannot parse file")
+        error("cannot parse file " .. file)
     end
 end
 
